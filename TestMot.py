@@ -169,6 +169,11 @@ class TestMot(unittest.TestCase):
         self.assertEqual(L.compare(self.M), '10')
         self.assertEqual(self.M.compare(self.M), '00')
         self.assertEqual(L.compare(L), '00')
+        # Testing if adding 1 empty byte at the left has no effect
+        L.relativExtension(1)
+        self.assertEqual(self.M == L, False)
+        H = self.M.relativExtension(1)
+        self.assertEqual(self.M == H, True)
 
     def test_extend(self):
         """
@@ -267,8 +272,11 @@ class TestMot(unittest.TestCase):
         # Testing A == A : true
         self.assertEqual(self.M == self.M, True)
         # Testing different length comparison
-        L = Mot(3)
-        L.binaire = '100000000000000000000000'
+        L = Mot(2)
+        L.binaire = '1000000000000000'
+        self.assertEqual(self.M == L, False)
+        # Testing if adding 1 empty byte at the left has no effect
+        L.relativExtension(1)
         self.assertEqual(self.M == L, False)
 
 

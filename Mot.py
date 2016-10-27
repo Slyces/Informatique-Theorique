@@ -13,8 +13,11 @@ __status__ = 'Prototype'
 # Imports
 from random import randrange as rr
 
+
 # =============================================================================
 # Decorator for the methods accepting only arguments of the same length
+
+
 def same_length(f):
     """
     This decorator is used for the methods applying to 2 Mot of same length
@@ -23,6 +26,7 @@ def same_length(f):
     :param f: function | method
     :return: function | method
     """
+
     def wrapper(self: 'Mot', other: 'Mot'):
         """
         The wrapper taking 2 Mot and making them the same length
@@ -32,16 +36,18 @@ def same_length(f):
         :type other: Mot
         :return: function
         """
-        if type(other) != Mot : raise TypeError('Other must be a Mot')
-        if self.nb_bytes > other.nb_bytes :
+        if type(other) != Mot:
+            raise TypeError('Other must be a Mot')
+        if self.nb_bytes > other.nb_bytes:
             other = other.extend(self.nb_bytes)
-        elif other.nb_bytes > self.nb_bytes :
+        elif other.nb_bytes > self.nb_bytes:
             self = self.extend(other.nb_bytes)
         # Calling the method
-        f(self, other)
+        return f(self, other)
 
     # Returning the wrapper
     return wrapper
+
 
 # =============================================================================
 
@@ -55,14 +61,16 @@ class Mot(object):
             :type n: int
             :return: Mot or Error
         """
-        if type(n) != int or n <= 0 : raise TypeError('Wrong type for n')
+        if type(n) != int or n <= 0:
+            raise TypeError('Wrong type for n')
 
         # Init of nb_bytes
         self.__nb_bytes = n
+        self.__binaire = ''
 
         # Init of binary repr, using the binaire setter
         binaire = ''
-        for i in range(n*8):
+        for i in range(n * 8):
             binaire += str(rr(2))
         self.binaire = binaire
 
@@ -111,9 +119,9 @@ class Mot(object):
         >>> A.binaire
         '1010101001010101'
         """
-        if len(string) != len(self) or type(string) != str :
+        if len(string) != len(self) or type(string) != str:
             raise TypeError("Wrong type or length for string")
-        for char in string :
+        for char in string:
             if char != '0' and char != '1':
                 raise TypeError("String must be composed of 0 & 1 only")
         self.__binaire = string
@@ -137,7 +145,7 @@ class Mot(object):
             number of bits
         :return: int
         """
-        return 8*self.nb_bytes
+        return 8 * self.nb_bytes
 
     def __rshift__(self, n: int) -> 'Mot':
         """
@@ -153,12 +161,14 @@ class Mot(object):
         >>> a.binaire
         '00101100'
         """
-        if type(n) != int or n <= 0 : raise TypeError('Wrong type for n')
-        if n > len(self) : n = len(self)
+        if type(n) != int or n <= 0:
+            raise TypeError('Wrong type for n')
+        if n > len(self):
+            n = len(self)
 
-        M = Mot(self.nb_bytes)
-        M.binaire = '0'*n + self.binaire[:-n]
-        return M
+        H = Mot(self.nb_bytes)
+        H.binaire = '0' * n + self.binaire[:-n]
+        return H
 
     def __lshift__(self, n: int) -> 'Mot':
         """
@@ -173,12 +183,14 @@ class Mot(object):
         >>> a.binaire
         '11000000'
         """
-        if type(n) != int or n <= 0 : raise TypeError('Wrong type for n')
-        if n > len(self) : n = len(self)
+        if type(n) != int or n <= 0:
+            raise TypeError('Wrong type for n')
+        if n > len(self):
+            n = len(self)
 
-        M = Mot(self.nb_bytes)
-        M.binaire = self.binaire[n:] + '0' * n
-        return M
+        H = Mot(self.nb_bytes)
+        H.binaire = self.binaire[n:] + '0' * n
+        return H
 
     def __compute_valeur(self) -> None:
         """
@@ -210,13 +222,15 @@ class Mot(object):
         '01001111'
         """
         # Returns a new Mot
-        M = Mot(self.nb_bytes)
+        H = Mot(self.nb_bytes)
         complement = ''
         for char in self.binaire:
-            if char == '0': complement += '1'
-            else : complement += '0'
-        M.binaire = complement
-        return M
+            if char == '0':
+                complement += '1'
+            else:
+                complement += '0'
+        H.binaire = complement
+        return H
 
     # @same_length
     def compare(self, other: 'Mot') -> str:
@@ -245,11 +259,12 @@ class Mot(object):
         >>> a.compare(a)
         '00'
         """
-        if type(other) != Mot : raise TypeError("Other must be a Mot")
+        if type(other) != Mot:
+            raise TypeError("Other must be a Mot")
         if len(self) != len(other):
             raise TypeError("The 2 Mot must be of same length")
         for i in range(len(self)):
-            if self.binaire[i] != other.binaire[i] :
+            if self.binaire[i] != other.binaire[i]:
                 return self.binaire[i] + other.binaire[i]
         return '00'
 
@@ -272,12 +287,14 @@ class Mot(object):
         >>> b.nb_bytes
         9
         """
-        if type(N) != int : raise TypeError("N must be an int")
+        if type(N) != int:
+            raise TypeError("N must be an int")
         # Extending to something lower than nb_bytes has no effect
-        if N <= self.nb_bytes : return self
-        M = Mot(N)
-        M.binaire = '00000000' * (N-self.nb_bytes) + self.binaire
-        return M
+        if N <= self.nb_bytes:
+            return self
+        H = Mot(N)
+        H.binaire = '00000000' * (N - self.nb_bytes) + self.binaire
+        return H
 
     def reduce(self, N: int) -> 'Mot':
         """
@@ -295,12 +312,14 @@ class Mot(object):
         >>> b.nb_bytes
         1
         """
-        if type(N) != int : raise TypeError("N must be an int")
+        if type(N) != int:
+            raise TypeError("N must be an int")
         # Reducing to something greater than nb_bytes has no effect
-        if N >= self.nb_bytes : return self
-        M = Mot(max(N,1))
-        M.binaire = self.binaire[:len(M)]
-        return M
+        if N >= self.nb_bytes:
+            return self
+        H = Mot(max(N, 1))
+        H.binaire = self.binaire[:len(H)]
+        return H
 
     def cast(self, N: int) -> 'Mot':
         """
@@ -312,9 +331,12 @@ class Mot(object):
         :type N: int
         :return: Mot
         """
-        if type(N) != int : raise TypeError("Wrong type for N")
-        if N >= self.nb_bytes : return self.extend(N)
-        else : return self.reduce(N)
+        if type(N) != int:
+            raise TypeError("Wrong type for N")
+        if N >= self.nb_bytes:
+            return self.extend(N)
+        else:
+            return self.reduce(N)
 
     def relativExtension(self, N: int) -> 'Mot':
         """
@@ -340,9 +362,12 @@ class Mot(object):
         >>> a.binaire
         '00000000'
         """
-        if type(N) != int : raise TypeError("Wrong type for N")
-        if N >= 0: return self.extend(self.nb_bytes + N)
-        else : return self.reduce(self.nb_bytes - N)
+        if type(N) != int:
+            raise TypeError("Wrong type for N")
+        if N >= 0:
+            return self.extend(self.nb_bytes + N)
+        else:
+            return self.reduce(self.nb_bytes + N)
 
     @same_length
     def __eq__(self, other: 'Mot') -> bool:
@@ -355,8 +380,9 @@ class Mot(object):
         :type other: Mot
         :return: bool | Error
         """
-        return False
-
+        if type(other) != Mot or len(self) != len(other):
+            raise TypeError('Wrong type or length for other')
+        return self.compare(other) == '00'
 
     # INUTILE
     def __repr__(self) -> str:
@@ -398,14 +424,13 @@ if __name__ == '__main__':
     A = Mot(3)
     A.binaire = '100110100101010010101011'
     print(A)
-    A.valeur
     M = Mot(2)
     M.binaire = '0010101100101011'
     print(M)
     print(M.valeur)
 
-    M = Mot(5)
-    M.binaire = '0100110001001010100110011100010100111011'
+    M = Mot(4)
+    M.binaire = '01001100010010101001100111000101'
     print(M)
 
     print(M.relativExtension(0))

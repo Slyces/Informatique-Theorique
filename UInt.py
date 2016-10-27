@@ -21,8 +21,9 @@ class UInt(Mot):
 
     def __init__(self, n: int) -> 'UInt':
         """ @To-Do """
+        # n typed in the Mot constructor
         Mot.__init__(self, n)
-        pass
+        self.__Maximum = pow(2, len(self)+1) - 1
 
     # =========================================================================
     # Getters and setters
@@ -35,11 +36,11 @@ class UInt(Mot):
         :return: int
 
         :Example:
-        >>> a = UInt(4)
+        >>> a = UInt(3)
         >>> a.Maximum
-        16777215
+        33554431
         """
-        return 1
+        return self.__Maximum
 
     # Read-only
     @property
@@ -54,7 +55,7 @@ class UInt(Mot):
         >>> a.hexadecimal
         'FF'
         """
-        return 'FF'
+        return self.__valeur
 
     # =========================================================================
     # Methods
@@ -107,9 +108,27 @@ class UInt(Mot):
         """
         return False
 
-    
+    def valeur(self) -> int:
+        """
+        Return the value in base 10 of this binary Unsigned Int
+        :return: int
+        """
+        n = 0
+        for i in range(len(self)):
+            n += int(self.binaire[-(i+1)]) * pow(2, i)
+        return n
+
+    # INUTILE
+    def __repr__(self) -> str:
+        """
+        Defines the repr of an Unsigned Int : adding the value in base 10
+        :return: str
+        """
+        R = super(self).__repr__().split('\n')
+        R[0] += ''
+
 
 if __name__ == '__main__':
-    import doctest
-
-    doctest.testmod()
+    M = UInt(3)
+    print(M)
+    print(M.Maximum)

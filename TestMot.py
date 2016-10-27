@@ -160,6 +160,10 @@ class TestMot(unittest.TestCase):
         # Self.M.binaire = '0010101100101011'
         L = Mot(2)
         L.binaire = '0010101100001011'
+        # Testing input types
+        for elem in (1,-1,'',2,[],{},2.5):
+            with self.assertRaises(TypeError):
+                self.M.compare(elem)
         # Testing the return type
         self.assertIsInstance(self.M.compare(L), str)
         # Testing the actual method
@@ -267,6 +271,10 @@ class TestMot(unittest.TestCase):
         """
         Testing the Mot.__eq__ (M == L) method
         """
+        # Testing input types
+        for elem in (1,-1,'',2,[],{},2.5):
+            with self.assertRaises(TypeError):
+                self.M == elem
         # Testing return type
         self.assertIsInstance(self.M == self.M, bool)
         # Testing A == A : true

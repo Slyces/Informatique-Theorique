@@ -36,8 +36,9 @@ def same_length(f):
         :type other: Mot
         :return: function
         """
-        if type(other) != Mot:
+        if not isinstance(other, Mot):
             raise TypeError('Other must be a Mot')
+
         if self.nb_bytes > other.nb_bytes:
             other = other.extend(self.nb_bytes)
         elif other.nb_bytes > self.nb_bytes:
@@ -161,12 +162,14 @@ class Mot(object):
         >>> a.binaire
         '00101100'
         """
-        if type(n) != int or n <= 0:
+        if type(n) != int or n < 0:
             raise TypeError('Wrong type for n')
         if n > len(self):
             n = len(self)
+        if n == 0:
+            return self
 
-        H = Mot(self.nb_bytes)
+        H = self.__class__(self.nb_bytes)
         H.binaire = '0' * n + self.binaire[:-n]
         return H
 
@@ -183,12 +186,14 @@ class Mot(object):
         >>> a.binaire
         '11000000'
         """
-        if type(n) != int or n <= 0:
+        if type(n) != int or n < 0:
             raise TypeError('Wrong type for n')
         if n > len(self):
             n = len(self)
+        if n == 0:
+            return self
 
-        H = Mot(self.nb_bytes)
+        H = self.__class__(self.nb_bytes)
         H.binaire = self.binaire[n:] + '0' * n
         return H
 
@@ -222,7 +227,7 @@ class Mot(object):
         '01001111'
         """
         # Returns a new Mot
-        H = Mot(self.nb_bytes)
+        H = self.__class__(self.nb_bytes)
         complement = ''
         for char in self.binaire:
             if char == '0':
@@ -259,10 +264,8 @@ class Mot(object):
         >>> a.compare(a)
         '00'
         """
-        if type(other) != Mot:
-            raise TypeError("Other must be a Mot")
-        if len(self) != len(other):
-            raise TypeError("The 2 Mot must be of same length")
+        if type(other) != self.__class__ or len(self) != len(other):
+            raise TypeError("Other must be of same class and length")
         for i in range(len(self)):
             if self.binaire[i] != other.binaire[i]:
                 return self.binaire[i] + other.binaire[i]
@@ -292,7 +295,7 @@ class Mot(object):
         # Extending to something lower than nb_bytes has no effect
         if N <= self.nb_bytes:
             return self
-        H = Mot(N)
+        H = self.__class__(N)
         H.binaire = '00000000' * (N - self.nb_bytes) + self.binaire
         return H
 
@@ -317,7 +320,7 @@ class Mot(object):
         # Reducing to something greater than nb_bytes has no effect
         if N >= self.nb_bytes:
             return self
-        H = Mot(max(N, 1))
+        H = self.__class__(max(N, 1))
         H.binaire = self.binaire[:len(H)]
         return H
 
@@ -355,10 +358,10 @@ class Mot(object):
         >>> a = a.relativExtension(-1)
         >>> a.binaire
         '1011101001100110'
-        >>> a.relativExtension(2)
+        >>> a = a.relativExtension(2)
         >>> a.binaire
         '00000000000000001011101001100110'
-        >>> a.relativExtension(-8)
+        >>> a = a.relativExtension(-8)
         >>> a.binaire
         '00000000'
         """
@@ -415,23 +418,14 @@ class Mot(object):
 
 
 if __name__ == '__main__':
-    A = Mot(3)
-    A.binaire = '100110100101010010101011'
-    print(A)
-    M = Mot(2)
-    M.binaire = '0010101100101011'
-    print(M)
-    print(M.valeur)
+    import doctest
 
+    print("Testing the doc examples")
+    doctest.testmod()
+    print("Testings done")
     M = Mot(4)
     M.binaire = '01001100010010101001100111000101'
     print(M)
 
-    print(M.relativExtension(0))
     print(M.relativExtension(1))
     print(M.relativExtension(-1))
-    print(M.__repr__())
-
-    print('Doctest !!')
-    import doctest
-    doctest.testmod()

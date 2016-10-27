@@ -115,7 +115,7 @@ class UInt(Mot):
         """
         n = 0
         for i in range(len(self)):
-            n += int(self.binaire[-(i+1)]) * pow(2, i)
+            n += int(self.binaire[-(i + 1)]) * pow(2, i)
         return n
 
     # INUTILE
@@ -124,8 +124,12 @@ class UInt(Mot):
         Defines the repr of an Unsigned Int : adding the value in base 10
         :return: str
         """
-        R = super(self).__repr__().split('\n')
-        R[0] += ''
+        n = str(self.valeur())
+        R = super().__repr__().split('\n')
+        R[0] += '\u2553' + '\u2500' * (len(n)+2) + '\u2556'
+        R[1] += '\u2551 ' + n + ' \u2551'
+        R[2] += '\u2559' + '\u2500' * (len(n)+2) + '\u255C'
+        return '\n'.join(R)
 
 
 if __name__ == '__main__':

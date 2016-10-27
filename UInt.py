@@ -105,7 +105,9 @@ class UInt(Mot):
         :type other: UInt
         :return: bool
         """
+        return False
 
+    
 
 if __name__ == '__main__':
     import doctest

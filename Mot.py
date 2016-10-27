@@ -38,7 +38,7 @@ def same_length(f):
         elif other.nb_bytes > self.nb_bytes :
             self = self.extend(other.nb_bytes)
         # Calling the method
-        f(self, other)
+        return f(self, other)
 
     # Returning the wrapper
     return wrapper
@@ -342,7 +342,7 @@ class Mot(object):
         """
         if type(N) != int : raise TypeError("Wrong type for N")
         if N >= 0: return self.extend(self.nb_bytes + N)
-        else : return self.reduce(self.nb_bytes - N)
+        else : return self.reduce(self.nb_bytes + N)
 
     @same_length
     def __eq__(self, other: 'Mot') -> bool:
@@ -355,7 +355,9 @@ class Mot(object):
         :type other: Mot
         :return: bool | Error
         """
-        return False
+        if type(other) != Mot or len(self) != len(other) :
+            raise TypeError('Wrong type or length for other')
+        return self.compare(other) == '00'
 
 
     # INUTILE
@@ -404,8 +406,8 @@ if __name__ == '__main__':
     print(M)
     print(M.valeur)
 
-    M = Mot(5)
-    M.binaire = '0100110001001010100110011100010100111011'
+    M = Mot(4)
+    M.binaire = '01001100010010101001100111000101'
     print(M)
 
     print(M.relativExtension(0))

@@ -53,13 +53,13 @@ def same_length(f):
 
 class Mot(object):
     def __init__(self, n: int) -> 'Mot':
-        """ @To-Do
-            Returns a word of n bytes initialised at a random value
-            The parameter n must be positive and not null
+        """
+        Returns a word of n bytes initialised at a random value
+        The parameter n must be positive and not null
 
-            :param n: number of bytes of the word
-            :type n: int
-            :return: Mot or Error
+        :param n: number of bytes of the word
+        :type n: int
+        :return: Mot or Error
         """
         if type(n) != int or n <= 0:
             raise TypeError('Wrong type for n')
@@ -389,14 +389,8 @@ class Mot(object):
         """
         Encodes the representation of the object Mot
         :return: str
-
-        :Example:
-        >>> a = Mot(1)
-        >>> a.binaire = '10010101'
-        >>> a
-
         """
-        representation = '╓'
+        representation = '\u2553'
         for i in range(len(self.binaire)):
             representation += '\u2500' * 3
             if i % 8 == 7:
@@ -436,3 +430,8 @@ if __name__ == '__main__':
     print(M.relativExtension(0))
     print(M.relativExtension(1))
     print(M.relativExtension(-1))
+    print(M.__repr__())
+
+    print('Doctest !!')
+    import doctest
+    doctest.testmod()

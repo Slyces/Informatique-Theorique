@@ -281,7 +281,4 @@ class TestMot(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print("=" * 80 + "\nFirst going through the doc examples :")
-    doctest.testmod()
-    print("\n" + "=" * 80 + "\nNow unit testing (may overlap with doc_tests):")
     unittest.main()

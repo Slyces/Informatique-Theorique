@@ -10,7 +10,7 @@ __email__ = 'simon.lassourreuille@etu.u-bordeaux.fr'
 __status__ = 'Prototype'
 # =============================================================================
 # Imports
-from Mot import Mot
+from Mot import Mot, same_length
 
 
 # =============================================================================
@@ -20,7 +20,14 @@ class UInt(Mot):
     """
 
     def __init__(self, n: int) -> 'UInt':
-        """ @To-Do """
+        """
+        Returns an Unsigned Int of n bytes initialised at a random value
+        The parameter n must be positive and not null
+
+        :param n: number of bytes of the word
+        :type n: int
+        :return: Mot or Error
+        """
         # n typed in the Mot constructor
         Mot.__init__(self, n)
         self.__Maximum = pow(2, len(self)+1) - 1
@@ -92,7 +99,7 @@ class UInt(Mot):
         >>> b.binaire = '00000101'
         >>> c = a*b
         >>> c.binaire
-        '0000000000101000' 8 + 32 = 40
+        '0000000000101000' 8 * 5 = 40
         """
         return UInt(2)
 
@@ -118,7 +125,7 @@ class UInt(Mot):
             n += int(self.binaire[-(i + 1)]) * pow(2, i)
         return n
 
-    # INUTILE
+    # INUTILE =================================================================
     def __repr__(self) -> str:
         """
         Defines the repr of an Unsigned Int : adding the value in base 10

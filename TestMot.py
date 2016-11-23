@@ -122,7 +122,7 @@ class TestMot(unittest.TestCase):
         for x in ('', [], {}, 1.2, -4, ()):
             with self.assertRaises(TypeError):
                 self.M << x
-        # Testing the return type
+        # Axiome : return type
         self.assertIsInstance(self.M << 2, Mot)
         # Testing the actual method
         L = self.M << 2
@@ -161,7 +161,7 @@ class TestMot(unittest.TestCase):
         L = Mot(2)
         L.binaire = '0010101100001011'
         # Testing input types
-        for elem in (1,-1,'',2,[],{},2.5):
+        for elem in (1, -1, '', 2, [], {}, 2.5):
             with self.assertRaises(TypeError):
                 self.M.compare(elem)
         # Testing the return type
@@ -173,11 +173,6 @@ class TestMot(unittest.TestCase):
         self.assertEqual(L.compare(self.M), '10')
         self.assertEqual(self.M.compare(self.M), '00')
         self.assertEqual(L.compare(L), '00')
-        # Testing if adding 1 empty byte at the left has no effect
-        L.relativExtension(1)
-        self.assertEqual(self.M == L, False)
-        H = self.M.relativExtension(1)
-        self.assertEqual(self.M == H, True)
 
     def test_extend(self):
         """
@@ -191,8 +186,8 @@ class TestMot(unittest.TestCase):
             with self.assertRaises(TypeError):
                 self.M.extend(n)
         # Testing if n < M.nb_bytes has no effect
-        for n in (-178954,-4,0,1,2):
-            self.assertEqual(self.M.binaire,self.M.extend(n).binaire)
+        for n in (-178954, -4, 0, 1, 2):
+            self.assertEqual(self.M.binaire, self.M.extend(n).binaire)
             self.assertEqual(self.M.nb_bytes, self.M.extend(n).nb_bytes)
 
         # Testing the filling to the left
@@ -230,9 +225,9 @@ class TestMot(unittest.TestCase):
                    '0100110001001010',
                    '01001100')
         for i in range(5):
-            L = M.reduce(5-i)
-            self.assertEqual(L.nb_bytes, 5-i)
-            self.assertEqual(L.binaire,results[i])
+            L = M.reduce(5 - i)
+            self.assertEqual(L.nb_bytes, 5 - i)
+            self.assertEqual(L.binaire, results[i])
 
     def test_cast(self):
         """
@@ -243,11 +238,11 @@ class TestMot(unittest.TestCase):
         M = Mot(6)
         M.binaire = '010011000100101010011001110001010011101100101011'
         # Testing the 'smart' call to reduce
-        for n in (-14,-5,0,1,2,4,5):
+        for n in (-14, -5, 0, 1, 2, 4, 5):
             self.assertEqual(M.cast(n).binaire, M.reduce(n).binaire)
             self.assertEqual(M.cast(n).nb_bytes, M.reduce(n).nb_bytes)
         # Testing the 'smart' call to extend
-        for n in (6,7,12,205):
+        for n in (6, 7, 12, 205):
             self.assertEqual(M.cast(n).nb_bytes, M.extend(n).nb_bytes)
             self.assertEqual(M.cast(n).binaire, M.extend(n).binaire)
 
@@ -263,16 +258,16 @@ class TestMot(unittest.TestCase):
         self.assertEqual(M.relativExtension(0).binaire, M.binaire)
         self.assertEqual(M.relativExtension(0).nb_bytes, M.nb_bytes)
         # Testing some values that should work fine
-        for n in (-174,-25,-9,-4,-2,0,1,3,7,9,12,254):
-            self.assertEqual(M.relativExtension(n).nb_bytes, M.cast(6+n).nb_bytes)
-            self.assertEqual(M.relativExtension(n).binaire, M.cast(6+n).binaire)
+        for n in (-174, -25, -9, -4, -2, 0, 1, 3, 7, 9, 12, 254):
+            self.assertEqual(M.relativExtension(n).nb_bytes, M.cast(6 + n).nb_bytes)
+            self.assertEqual(M.relativExtension(n).binaire, M.cast(6 + n).binaire)
 
     def test__eq__(self):
         """
         Testing the Mot.__eq__ (M == L) method
         """
         # Testing input types
-        for elem in (1,-1,'',2,[],{},2.5):
+        for elem in (1, -1, '', 2, [], {}, 2.5):
             with self.assertRaises(TypeError):
                 self.M == elem
         # Testing return type

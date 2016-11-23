@@ -10,7 +10,7 @@ __email__ = 'simon.lassourreuille@etu.u-bordeaux.fr'
 __status__ = 'Prototype'
 # =============================================================================
 # Imports
-from Mot import Mot, same_length
+from Mot import Mot
 
 
 # =============================================================================
@@ -30,7 +30,6 @@ class UInt(Mot):
         """
         # n typed in the Mot constructor
         Mot.__init__(self, n)
-        self.__Maximum = pow(2, len(self)) - 1
 
     # =========================================================================
     # Getters and setters
@@ -47,7 +46,9 @@ class UInt(Mot):
         >>> a.Maximum
         33554431
         """
-        return self.__Maximum
+        U = UInt(self.nb_bytes)
+        U.binaire = '1' * len(self)
+        return U
 
     # Read-only
     @property
@@ -66,7 +67,6 @@ class UInt(Mot):
 
     # =========================================================================
     # Methods
-    @same_length
     def __add__(self, other: 'UInt') -> 'UInt':
         """
         Defines the addition of 2 UInt of same length, used as :
@@ -83,7 +83,7 @@ class UInt(Mot):
         >>> c.binaire # An error can be raised :
         '00000110'    # In the case where a + b needs more bites than a and b
         """
-        if type(other) != UInt or len(self) != len(other):
+        if type(other) != self.__class__ or len(self) != len(other):
             raise TypeError("Wrong type or length for other")
         retenue = 0
         new_bin = ''
@@ -92,12 +92,11 @@ class UInt(Mot):
             new_bin = ['0', '1', '0', '1'][k] + new_bin
             retenue = 1 if k > 1 else 0
         if retenue:
-            raise ArithmeticError("The sum is over the bytes available")
-        U = UInt(self.nb_bytes)
-        U.binaire = new_bin
-        return U
+            raise OverflowError("The sum is over the bytes available")
+        H = self.__class__(self.nb_bytes)
+        H.binaire = new_bin
+        return H
 
-    @same_length
     def __mul__(self, other: 'UInt') -> 'UInt':
         """
         Defines the multiplication of 2 unsigned int of same length, used as :
@@ -116,16 +115,15 @@ class UInt(Mot):
         '0000000000101000' 8 * 5 = 40
         """
         if type(other) != self.__class__ or len(self) != len(other):
+            print(type(self), type(other))
             raise TypeError("The length and types must be the same")
-        N = UInt(self.nb_bytes * 2)
+        N = self.__class__(self.nb_bytes * 2)
         N.binaire = '0' * len(self) * 2
         for i in range(len(self)):
             if self.binaire[-(i + 1)] == '1':
                 N = N + (other.extend(2 * self.nb_bytes) << i)
         return N
 
-
-    @same_length
     def __lt__(self, other: 'UInt') -> bool:
         """
         Orders two UInt using : a < b -- > a.__lt__(b)
@@ -136,7 +134,7 @@ class UInt(Mot):
         :type other: UInt
         :return: bool
         """
-        if type(other) != UInt or len(self) != len(other):
+        if type(other) != self.__class__ or len(self) != len(other):
             raise TypeError("other must be of same length and type")
         return self.compare(other) == '01'
 

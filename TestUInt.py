@@ -1,7 +1,7 @@
 # =============================================================================
-'''
+"""
 Quick description of the file
-'''
+"""
 # =============================================================================
 __author__ = 'Simon Lassourreuille'
 __version__ = ''
@@ -34,9 +34,14 @@ class TestUInt(unittest.TestCase):
         """
         Testing the Maximum attribute's getter
         """
-        for n,max in {1:255, 2:65535, 3:16777215, 4:4294967295}.items():
+        # Signature : output type
+        U = UInt(4)
+        self.assertIsInstance(U.Maximum, UInt)
+
+        # Axiome : value
+        for n, max in {1: 255, 2: 65535, 3: 16777215, 4: 4294967295}.items():
             # Numbers obtained using int('11111111'*i, 2)
-            self.assertEqual(UInt(n).Maximum, max)
+            self.assertEqual(UInt(n).Maximum.valeur(), max)
 
     def test_hexadecimal(self):
         """
@@ -44,53 +49,42 @@ class TestUInt(unittest.TestCase):
         """
         for i in range(5):
             # Tests done using the Python builtins functions
-            U = UInt(rdi(1,15))
-            Hex = hex(int(U.binaire,2))[2:].upper()
-            self.assertEqual(U.hexadecimal,(len(U.hexadecimal)-len(Hex))*'0'+Hex)
+            U = UInt(rdi(1, 15))
+            Hex = hex(int(U.binaire, 2))[2:].upper()
+            self.assertEqual(U.hexadecimal, (len(U.hexadecimal) - len(Hex)) * '0' + Hex)
 
     def test__add__(self):
         """
         Testing the addition of 2 Unsigned Ints
         """
         U = UInt(4)
-        U.binaire = '0'*24 + '1'*8
-        # Testing type of params
+        U.binaire = '0' * 24 + '1' * 8
+        # Testing input type
         V = UInt(4)
-        V.binaire = '0'*16 + '00000001' + '0'*8
-        for elem in (1,-1,'',2,[],{},2.5, Mot(1)):
+        V.binaire = '0' * 16 + '00000001' + '0' * 8
+        for elem in (1, -1, '', 2, [], {}, 2.5, Mot(1)):
             with self.assertRaises(TypeError):
                 U + elem
         # Testing the return type
         self.assertIsInstance(U + V, UInt)
         # First testing if this works with same length UInts
         for i in range(5):
-            k = rdi(1,5)
+            k = rdi(1, 5)
             U = UInt(k)
             V = UInt(k)
             S = U.valeur() + V.valeur()
-            if S > U.Maximum :
-                with self.assertRaises(ArithmeticError):
-                    U + V
-            else :
-                W = U + V
-                self.assertEqual(W.valeur(), S)
-        # Testing with different length
-        for i in range(5):
-            U = UInt(rdi(1,5))
-            V = UInt(rdi(1,5))
-            S = U.valeur() + V.valeur()
-            if S > U.Maximum and S > V.Maximum:
-                with self.assertRaises(ArithmeticError):
+            if S > U.Maximum.valeur():
+                with self.assertRaises(OverflowError):
                     U + V
             else:
                 W = U + V
                 self.assertEqual(W.valeur(), S)
-        # Testing the arithmetic error
+        # Testing the OverflowError error
         U = UInt(4)
         V = UInt(4)
-        U.binaire = '1'*len(U)
-        V.binaire = '0'*(len(V)-1) + '1'
-        with self.assertRaises(ArithmeticError):
+        U.binaire = '1' * len(U)
+        V.binaire = '0' * (len(V) - 1) + '1'
+        with self.assertRaises(OverflowError):
             U + V
 
     def test__mul__(self):
@@ -111,13 +105,7 @@ class TestUInt(unittest.TestCase):
             U = UInt(k)
             V = UInt(k)
             W = U * V
-            self.assertEqual(W.valeur(),U.valeur() * V.valeur())
-        # Testing with different length
-        for i in range(5):
-            U = UInt(rdi(1, 5))
-            V = UInt(rdi(1, 5))
-            W = U * V
-            self.assertEqual(W.valeur(),U.valeur() * V.valeur())
+            self.assertEqual(W.valeur(), U.valeur() * V.valeur())
 
     def test__lt__(self):
         """
@@ -132,18 +120,17 @@ class TestUInt(unittest.TestCase):
         V = UInt(4)
         self.assertIsInstance(U < V, bool)
         # Testing the comparison of same lengths ints
-        k = rdi(1,5)
+        k = rdi(1, 5)
         ints = [UInt(k) for i in range(5)]
         for i in range(5):
             for j in range(5):
                 self.assertEqual(ints[i] < ints[j],
-                                 ints[i].valeur()<ints[j].valeur())
-        # Testing the comparison of different lengths ints
-        ints = [UInt(rdi(1,5)) for i in range(5)]
-        for i in range(5):
-            for j in range(5):
-                self.assertEqual(ints[i] < ints[j],
                                  ints[i].valeur() < ints[j].valeur())
+        # Axiome : ! a < b and ! b < a => a == b
+        a = UInt(4)
+        b = a
+        self.assertEqual(a < b, False)
+        self.assertEqual(b < a, False)
 
     def test_valeur(self):
         """
@@ -153,8 +140,9 @@ class TestUInt(unittest.TestCase):
         self.assertIsInstance(UInt(4).valeur(), int)
         # Testing with Python builtins
         for i in range(15):
-            U = UInt(rdi(1,15))
-            self.assertEqual(U.valeur(),int(U.binaire,2))
+            U = UInt(rdi(1, 15))
+            self.assertEqual(U.valeur(), int(U.binaire, 2))
+
 
 if __name__ == '__main__':
     unittest.main()

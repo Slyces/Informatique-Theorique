@@ -15,42 +15,6 @@ from random import randrange as rr
 
 
 # =============================================================================
-# Decorator for the methods accepting only arguments of the same length
-
-
-def same_length(f):
-    """
-    This decorator is used for the methods applying to 2 Mot of same length
-    It extends the shorter mot to the length of the larger*
-        (reducing would loose information)
-    :param f: function | method
-    :return: function | method
-    """
-
-    def wrapper(self: 'Mot', other: 'Mot'):
-        """
-        The wrapper taking 2 Mot and making them the same length
-        :param self: The word calling the decorated method
-        :type self: Mot
-        :param other: The word on which the method is called
-        :type other: Mot
-        :return: function
-        """
-        if not isinstance(other, Mot):
-            raise TypeError('Other must be a Mot')
-
-        if self.nb_bytes > other.nb_bytes:
-            other = other.extend(self.nb_bytes)
-        elif other.nb_bytes > self.nb_bytes:
-            self = self.extend(other.nb_bytes)
-        # Calling the method
-        return f(self, other)
-
-    # Returning the wrapper
-    return wrapper
-
-
-# =============================================================================
 
 class Mot(object):
     def __init__(self, n: int) -> 'Mot':
@@ -62,7 +26,7 @@ class Mot(object):
         :type n: int
         :return: Mot or Error
         """
-        if type(n) != int or n <= 0:
+        if type(n) != int or n <= 0:               
             raise TypeError('Wrong type for n')
 
         # Init of nb_bytes
@@ -127,7 +91,7 @@ class Mot(object):
                 raise TypeError("String must be composed of 0 & 1 only")
         self.__binaire = string
         # New binary : new hexadecimal too !
-        self.__compute_valeur()
+        self.__hexa()
 
     # valeur read only
     @property
@@ -197,7 +161,7 @@ class Mot(object):
         H.binaire = self.binaire[n:] + '0' * n
         return H
 
-    def __compute_valeur(self) -> None:
+    def __hexa(self) -> None:
         """
         Method computing the hexadecimal representation
         :return: None
@@ -210,10 +174,8 @@ class Mot(object):
             n = 0
             for j in range(4):
                 n += int(string[j]) * [8, 4, 2, 1][j]
-            if n < 10:
-                self.__valeur += str(n)
-            else:
-                self.__valeur += ['A', 'B', 'C', 'D', 'E', 'F'][n - 10]
+            self.__valeur += ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B',
+                              'C', 'D', 'E', 'F'][n]
 
     def complement(self) -> 'Mot':
         """
@@ -228,16 +190,15 @@ class Mot(object):
         """
         # Returns a new Mot
         H = self.__class__(self.nb_bytes)
-        complement = ''
+        compl = ''
         for char in self.binaire:
             if char == '0':
-                complement += '1'
+                compl += '1'
             else:
-                complement += '0'
-        H.binaire = complement
+                compl += '0'
+        H.binaire = compl
         return H
 
-    # @same_length
     def compare(self, other: 'Mot') -> str:
         """
         Compare 2 words of same length bit to bit from left to right
@@ -372,7 +333,6 @@ class Mot(object):
         else:
             return self.reduce(self.nb_bytes + N)
 
-    @same_length
     def __eq__(self, other: 'Mot') -> bool:
         """
         Defined if both Word are of same length
@@ -383,7 +343,7 @@ class Mot(object):
         :type other: Mot
         :return: bool | Error
         """
-        if type(other) != Mot or len(self) != len(other):
+        if type(other) != self.__class__ or len(self) != len(other):
             raise TypeError('Wrong type or length for other')
         return self.compare(other) == '00'
 

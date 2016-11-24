@@ -26,12 +26,13 @@ class Mot(object):
         :type n: int
         :return: Mot or Error
         """
-        if type(n) != int or n <= 0:               
+        if type(n) != int or n <= 0:
             raise TypeError('Wrong type for n')
 
         # Init of nb_bytes
         self.__nb_bytes = n
         self.__binaire = ''
+        self.__valeur = ''
 
         # Init of binary repr, using the binaire setter
         binaire = ''
@@ -91,7 +92,16 @@ class Mot(object):
                 raise TypeError("String must be composed of 0 & 1 only")
         self.__binaire = string
         # New binary : new hexadecimal too !
-        self.__hexa()
+        # Init of the hexadecimal value
+        self.__valeur = ''
+        for i in range(0, len(self), 4):
+            # Slicing the binary word in slices of 4 bits
+            string = self.binaire[i:i + 4]
+            n = 0
+            for j in range(4):
+                n += int(string[j]) * [8, 4, 2, 1][j]
+            self.__valeur += ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B',
+                              'C', 'D', 'E', 'F'][n]
 
     # valeur read only
     @property
@@ -161,22 +171,6 @@ class Mot(object):
         H.binaire = self.binaire[n:] + '0' * n
         return H
 
-    def __hexa(self) -> None:
-        """
-        Method computing the hexadecimal representation
-        :return: None
-        """
-        # Init of the hexadecimal value
-        self.__valeur = ''
-        for i in range(0, len(self), 4):
-            # Slicing the binary word in slices of 4 bits
-            string = self.binaire[i:i + 4]
-            n = 0
-            for j in range(4):
-                n += int(string[j]) * [8, 4, 2, 1][j]
-            self.__valeur += ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B',
-                              'C', 'D', 'E', 'F'][n]
-
     def complement(self) -> 'Mot':
         """
         Does a complement to 1, inverting 0 to 1 and 1 to 0
@@ -190,13 +184,13 @@ class Mot(object):
         """
         # Returns a new Mot
         H = self.__class__(self.nb_bytes)
-        compl = ''
+        complement = ''
         for char in self.binaire:
             if char == '0':
-                compl += '1'
+                complement += '1'
             else:
-                compl += '0'
-        H.binaire = compl
+                complement += '0'
+        H.binaire = complement
         return H
 
     def compare(self, other: 'Mot') -> str:

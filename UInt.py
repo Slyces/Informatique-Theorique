@@ -43,8 +43,8 @@ class UInt(Mot):
 
         :Example:
         >>> a = UInt(3)
-        >>> a.Maximum
-        33554431
+        >>> a.Maximum.valeur()
+        16777215
         """
         U = UInt(self.nb_bytes)
         U.binaire = '1' * len(self)
@@ -81,7 +81,8 @@ class UInt(Mot):
         >>> b.binaire = '00000001'
         >>> c = a + b # The addition returns a new UInt
         >>> c.binaire # An error can be raised :
-        '00000110'    # In the case where a + b needs more bites than a and b
+        '00000110'
+        >>> # In the case where a + b needs more bites than a and b
         """
         if type(other) != self.__class__ or len(self) != len(other):
             raise TypeError("Wrong type or length for other")
@@ -112,7 +113,7 @@ class UInt(Mot):
         >>> b.binaire = '00000101'
         >>> c = a*b
         >>> c.binaire
-        '0000000000101000' 8 * 5 = 40
+        '0000000000101000'
         """
         if type(other) != self.__class__ or len(self) != len(other):
             print(type(self), type(other))
@@ -160,14 +161,3 @@ class UInt(Mot):
         R[1] += '\u2551 ' + n + ' \u2551'
         R[2] += '\u2559' + '\u2500' * (len(n) + 2) + '\u255C'
         return '\n'.join(R)
-
-
-if __name__ == '__main__':
-    U = UInt(1)
-    V = UInt(1)
-    U.binaire = '01011011'
-    V.binaire = '01100111'
-    print(U)
-    print(V)
-    print(U * V)
-    print(U.valeur() * V.valeur())

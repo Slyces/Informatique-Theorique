@@ -42,9 +42,9 @@ class SInt(UInt):
         :return: SInt
 
         :Example:
-        >>> a = UInt(4)
-        >>> a.Maximum
-        WRITE THE VALUE HERE
+        >>> a = SInt(1)
+        >>> a.Maximum.valeur()
+        127
         """
         S = SInt(self.nb_bytes)
         S.binaire = '0' + '1' * (len(self) - 1)
@@ -58,9 +58,9 @@ class SInt(UInt):
         :return: SInt
 
         :Example:
-        >>> a = UInt(4)
-        >>> a.Minimum
-        WRITE THE VALUE HERE
+        >>> a = SInt(1)
+        >>> a.Minimum.valeur()
+        -128
         """
         S = SInt(self.nb_bytes)
         S.binaire = '1' + '0' * (len(self) - 1)
@@ -76,12 +76,12 @@ class SInt(UInt):
 
         :Example:
         >>> a = SInt(1)
-        >>> a.binaire = '11111111' #TEL QUE NEGATIF
+        >>> a.binaire = '10110011' #TEL QUE NEGATIF
         >>> a.signe
-        '1' # NEGATIF
-        >>> a.binaire = '11111111' #TEL QUE POSITIF
+        '1'
+        >>> a.binaire = '01100101' #TEL QUE POSITIF
         >>> a.signe
-        '0' # POSITIF
+        '0'
         """
         return self.binaire[0]
 
@@ -118,16 +118,16 @@ class SInt(UInt):
         S.binaire = self.signe + '0' * (N * 8 - len(self) - 1) + self.binaire
         return S
 
-    def complement(self):
+    def complement(self)->'SInt':
         """
         Every bite of the SInt is converted to its opposite (1 <-> 0)
         Then we add 1 to the result
+        :return: SInt
         :Example:
         >>> S = SInt(1)
         >>> S.binaire = '10001010'
-        >>> S.complement
+        >>> S.complement().binaire
         '01110110'
-        :return: SInt
         """
         S = SInt(self.nb_bytes)
         S.binaire = '0' * (len(self) - 1) + '1'
@@ -151,85 +151,92 @@ class SInt(UInt):
         """ Returns the value of the SignedInt"""
         if self.signe == '0':
             return super().valeur()
-        if self == self.Minimum :
-            return -2**(len(self)-1)
+        if self == self.Minimum:
+            return -2 ** (len(self) - 1)
         return - abs(self).valeur()
 
-    def __add__(self, other: 'SInt')->'SInt':
+    def __add__(self, other: 'SInt') -> 'SInt':
         """ Addition of 2 SInt, no overflow """
         # Recoding the addition
         if type(other) != self.__class__ or len(self) != len(other):
             raise TypeError("Wrong type or length for other")
-        retenue = [0 for i in range(len(self)+1)]
+        retenue = [0 for i in range(len(self) + 1)]
         new_bin = ''
         for i in range(len(self)):
             k = int(self.binaire[-(i + 1)]) + int(other.binaire[-(i + 1)]) + retenue[i]
             new_bin = ['0', '1', '0', '1'][k] + new_bin
-            retenue[i+1] = 1 if k > 1 else 0
+            retenue[i + 1] = 1 if k > 1 else 0
         if self.signe == other.signe and retenue[-1] != retenue[-2]:
             raise OverflowError("The sum is over the bytes available")
         H = self.__class__(self.nb_bytes)
         H.binaire = new_bin
         return H
 
-    def __sub__(self, other: 'SInt')->'SInt':
+    def __sub__(self, other: 'SInt') -> 'SInt':
         """ Subtraction of 2 SInt """
         return self + other.complement()
 
-    def __mul__(self, other: 'SInt')->'SInt':
+    def __mul__(self, other: 'SInt') -> 'SInt':
         """ Multiplication of 2 Signed Ints"""
         if self.signe == other.signe == '0':
             return super().__mul__(other)
         if self.signe == other.signe:
-            return abs(self)*abs(other)
-        return -(abs(self)*abs(other))
+            return abs(self) * abs(other)
+        return -(abs(self) * abs(other))
 
     def __neg__(self) -> 'SInt':
         """ As defined in an axiome, self.complement() == neg(self)"""
         return self.complement()
 
-    def __divmod__(self, other:'SInt')->'SInt':
+    def __divmod__(self, other: 'SInt') -> 'SInt':
         """ Defines the divmod of a and b, returns a pair (a//b,a%b)"""
         if type(self) != type(other):
             raise TypeError("Wrong type or length for other")
 
         size = max(self.nb_bytes, other.nb_bytes)
-        dividende,diviseur = abs(self).cast(size), abs(other).cast(size)
-        quotient = SInt(size)
+        Divid, Divis = abs(self).cast(size), abs(other).cast(size)
+        Quotient = SInt(size)
         one = SInt(size)
-        one.binaire = '0' *(size*8-1) + '1'
-        quotient.binaire = '0' * 8 * size
-        print("Diviseur :\n{}".format(diviseur))
-        print("Dividende :\n{}".format(dividende))
-        while diviseur < dividende :
-            quotient += one
-            dividende -= diviseur
-            print("Quotient :\n{}".format(quotient))
-            print("Reste :\n{}".format(dividende))
+        one.binaire = '0' * (size * 8 - 1) + '1'
+        Quotient.binaire = '0' * 8 * size
+        print("Dividende :\n{}\n".format(Divid))
+        print("Diviseur :\n{}".format(Divis))
+        while Divis < Divid or Divis == Divid:
+            Quotient += one
+            Divid -= Divis
+            print("-----------------------------------------------\nQuotient :\n{}".format(Quotient))
+            print("Reste :\n{}\n-----------------------------------------------".format(Divid))
         print("End of the While")
-        # Here, the remain is the diviseur
-        if self.signe != other.signe :
-            quotient = - quotient
-        if other.signe == '1':
-            dividende = - dividende
-        return quotient,dividende
+        # Here, the remain is the dividende
+        Remainer = Divid
+        if self.signe != other.signe:  # Problems occur only with different signs
+            if Remainer.valeur() == 0:  # When abs(a) % abs(b) == 0, there is specific instructions
+                Quotient = -Quotient
+            else:
+                Quotient = -(Quotient + one)
+                # ---------------------------------------------------------------------------------
+                print("New Quotient because signs != :\n{}".format(Quotient))
+                q_b = Quotient * other
+                print("Quotient * B :\n{}".format(q_b))
+                selcasted = self.cast(2 * size)
+                print("self.casted :\n{}".format(selcasted))
+                subb = selcasted - q_b
+                print("Sub : self.casted - Quotient * B\n{}".format(subb))
+                subb8 = subb << size * 8
+                print("Sub << size * 8\n".format(subb8))
+                test = subb8.cast(size)
+                print("Remainer :\n{}".format(test))
 
-    def __floordiv__(self, other: 'SInt')->'SInt':
+                Remainer = ((self.cast(2 * size) - (Quotient * other)) << size * 8).cast(size)
+                # ---------------------------------------------------------------------------------
+        if self.signe == other.signe == '1':
+            Remainer = - Remainer
+        return Quotient, Remainer
+
+    def __floordiv__(self, other: 'SInt') -> 'SInt':
         """ Defines self // other """
         return self.__divmod__(other)[0]
 
-    def __mod__(self, other:'SInt')->'SInt':
+    def __mod__(self, other: 'SInt') -> 'SInt':
         """ Defines self % other """
         return self.__divmod__(other)[1]
-
-if __name__ == '__main__':
-    # import doctest
-
-    # doctest.testmod()
-    K = SInt(4).Maximum
-    print(K.valeur())
-    k = SInt(4).Maximum.valeur()
-    print(k)
-
-
-

@@ -4,7 +4,6 @@ import unittest
 from random import randrange as rr
 from SInt import SInt
 
-
 class TestSInt(unittest.TestCase):
     """ TestCase of the class SInt's features """
 
@@ -32,7 +31,7 @@ class TestSInt(unittest.TestCase):
         self.assertIsInstance(S.signe, str)
         for i in range(4):
             S = SInt(4)
-            self.assertEquals(S.signe in ('1', '0'), True)
+            self.assertEqual(S.signe in ('1', '0'), True)
 
     def test_Maximum_getter(self):
         """
@@ -251,7 +250,7 @@ class TestSInt(unittest.TestCase):
             # Creating 2 numbers A & B, positive, A > B
             n = 1
             A,B = SInt(1), SInt(1)
-            a,b = rr(128),rr(128)
+            a,b = rr(127)+1,rr(127)+1
             A.binaire = bin(max(a,b))[2:].zfill(8)
             B.binaire = bin(min(a,b))[2:].zfill(8)
             # First case : divmod(A,B) : + > +

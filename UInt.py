@@ -31,6 +31,9 @@ class UInt(Mot):
         # n typed in the Mot constructor
         Mot.__init__(self, n)
 
+        # Computing the first decimal value with binary setter
+        self.binaire = self.binaire
+
     # =========================================================================
     # Getters and setters
 
@@ -116,7 +119,6 @@ class UInt(Mot):
         '0000000000101000'
         """
         if type(other) != self.__class__ or len(self) != len(other):
-            print(type(self), type(other))
             raise TypeError("The length and types must be the same")
         N = self.__class__(self.nb_bytes * 2)
         N.binaire = '0' * len(self) * 2
@@ -139,15 +141,21 @@ class UInt(Mot):
             raise TypeError("other must be of same length and type")
         return self.compare(other) == '01'
 
+    @Mot.binaire.setter
+    def binaire(self, value: str):
+        """ Overriding the setter to compute some values when setting"""
+        Mot.binaire.fset(self, value)
+        n = 0
+        for i in range(len(self)):
+            n += int(self.binaire[-(i + 1)]) * pow(2, i)
+        self.__b10value = n
+
     def valeur(self) -> int:
         """
         Return the value in base 10 of this binary Unsigned Int
         :return: int
         """
-        n = 0
-        for i in range(len(self)):
-            n += int(self.binaire[-(i + 1)]) * pow(2, i)
-        return n
+        return self.__b10value
 
     # INUTILE =================================================================
     def __repr__(self) -> str:

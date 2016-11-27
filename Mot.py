@@ -45,7 +45,7 @@ class Mot(object):
 
     # nbBytes read only
     @property
-    def nb_bytes(self) -> int:
+    def nbBytes(self) -> int:
         """
         Getter for the read-only nb_bytes
         ---> which is initialised in the constructor
@@ -54,7 +54,7 @@ class Mot(object):
 
         :Example:
         >>> A = Mot(2)
-        >>> A.nb_bytes
+        >>> A.nbBytes
         2
         """
         return self.__nb_bytes
@@ -92,7 +92,6 @@ class Mot(object):
                 raise TypeError("String must be composed of 0 & 1 only")
         self.__binaire = string
         # New binary : new hexadecimal too !
-        # Init of the hexadecimal value
         self.__valeur = ''
         for i in range(0, len(self), 4):
             # Slicing the binary word in slices of 4 bits
@@ -100,8 +99,7 @@ class Mot(object):
             n = 0
             for j in range(4):
                 n += int(string[j]) * [8, 4, 2, 1][j]
-            self.__valeur += ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B',
-                              'C', 'D', 'E', 'F'][n]
+            self.__valeur += str(n) if n < 10 else ['A', 'B','C', 'D', 'E', 'F'][n-10]
 
     # valeur read only
     @property
@@ -120,7 +118,7 @@ class Mot(object):
             number of bits
         :return: int
         """
-        return 8 * self.nb_bytes
+        return 8 * self.nbBytes
 
     def __rshift__(self, n: int) -> 'Mot':
         """
@@ -143,7 +141,7 @@ class Mot(object):
         if n == 0:
             return self
 
-        H = self.__class__(self.nb_bytes)
+        H = self.__class__(self.nbBytes)
         H.binaire = '0' * n + self.binaire[:-n]
         return H
 
@@ -167,7 +165,7 @@ class Mot(object):
         if n == 0:
             return self
 
-        H = self.__class__(self.nb_bytes)
+        H = self.__class__(self.nbBytes)
         H.binaire = self.binaire[n:] + '0' * n
         return H
 
@@ -183,7 +181,7 @@ class Mot(object):
         '01001111'
         """
         # Returns a new Mot
-        H = self.__class__(self.nb_bytes)
+        H = self.__class__(self.nbBytes)
         complement = ''
         for char in self.binaire:
             if char == '0':
@@ -236,22 +234,22 @@ class Mot(object):
 
         :Example:
         >>> a = Mot(1)
-        >>> a.nb_bytes
+        >>> a.nbBytes
         1
         >>> a = a.extend(9)
-        >>> a.nb_bytes
+        >>> a.nbBytes
         9
         >>> b = a.extend(4) # 4 is inferior to the actual number of bytes of a
-        >>> b.nb_bytes
+        >>> b.nbBytes
         9
         """
         if type(N) != int:
             raise TypeError("N must be an int")
         # Extending to something lower than nb_bytes has no effect
-        if N <= self.nb_bytes:
+        if N <= self.nbBytes:
             return self
         H = self.__class__(N)
-        H.binaire = '00000000' * (N - self.nb_bytes) + self.binaire
+        H.binaire = '00000000' * (N - self.nbBytes) + self.binaire
         return H
 
     def reduce(self, N: int) -> 'Mot':
@@ -264,16 +262,16 @@ class Mot(object):
 
         :Example:
         >>> a = Mot(4)
-        >>> a.nb_bytes
+        >>> a.nbBytes
         4
         >>> b = a.reduce(1)
-        >>> b.nb_bytes
+        >>> b.nbBytes
         1
         """
         if type(N) != int:
             raise TypeError("N must be an int")
         # Reducing to something greater than nb_bytes has no effect
-        if N >= self.nb_bytes:
+        if N >= self.nbBytes:
             return self
         H = self.__class__(max(N, 1))
         H.binaire = self.binaire[:len(H)]
@@ -291,7 +289,7 @@ class Mot(object):
         """
         if type(N) != int:
             raise TypeError("Wrong type for N")
-        if N >= self.nb_bytes:
+        if N >= self.nbBytes:
             return self.extend(N)
         else:
             return self.reduce(N)
@@ -323,9 +321,9 @@ class Mot(object):
         if type(N) != int:
             raise TypeError("Wrong type for N")
         if N >= 0:
-            return self.extend(self.nb_bytes + N)
+            return self.extend(self.nbBytes + N)
         else:
-            return self.reduce(self.nb_bytes + N)
+            return self.reduce(self.nbBytes + N)
 
     def __eq__(self, other: 'Mot') -> bool:
         """

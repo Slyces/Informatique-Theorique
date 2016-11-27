@@ -49,7 +49,7 @@ class UInt(Mot):
         >>> a.Maximum.valeur()
         16777215
         """
-        U = UInt(self.nb_bytes)
+        U = UInt(self.nbBytes)
         U.binaire = '1' * len(self)
         return U
 
@@ -97,7 +97,7 @@ class UInt(Mot):
             retenue = 1 if k > 1 else 0
         if retenue:
             raise OverflowError("The sum is over the bytes available")
-        H = self.__class__(self.nb_bytes)
+        H = self.__class__(self.nbBytes)
         H.binaire = new_bin
         return H
 
@@ -120,11 +120,11 @@ class UInt(Mot):
         """
         if type(other) != self.__class__ or len(self) != len(other):
             raise TypeError("The length and types must be the same")
-        N = self.__class__(self.nb_bytes * 2)
+        N = self.__class__(self.nbBytes * 2)
         N.binaire = '0' * len(self) * 2
         for i in range(len(self)):
             if self.binaire[-(i + 1)] == '1':
-                N = N + (other.extend(2 * self.nb_bytes) << i)
+                N = N + (other.extend(2 * self.nbBytes) << i)
         return N
 
     def __lt__(self, other: 'UInt') -> bool:
@@ -142,7 +142,7 @@ class UInt(Mot):
         return self.compare(other) == '01'
 
     @Mot.binaire.setter
-    def binaire(self, value: str):
+    def binaire(self, value: str)->str:
         """ Overriding the setter to compute some values when setting"""
         Mot.binaire.fset(self, value)
         n = 0

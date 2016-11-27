@@ -125,7 +125,10 @@ class TestSInt(unittest.TestCase):
         """
         Testing the compare method: testing 2 SInt and returning '10','01','00'
         """
-        pass
+        for i in range(50):
+            A = SInt(1)
+            B = SInt(1)
+            self.assertEqual(A < B, A.valeur() < B.valeur())
 
     def test_complement(self):
         """
@@ -154,7 +157,7 @@ class TestSInt(unittest.TestCase):
         self.assertIsInstance(abs(S), SInt)
 
         # Axiome : length
-        self.assertEqual(abs(S).nb_bytes, S.nb_bytes)
+        self.assertEqual(abs(S).nbBytes, S.nbBytes)
 
         # Axiome : positive
         self.assertEqual(abs(S).signe, '0')
@@ -178,7 +181,7 @@ class TestSInt(unittest.TestCase):
         self.assertIsInstance(S + S, SInt)
 
         # Axiome : length
-        self.assertEqual((S + S).nb_bytes, S.nb_bytes)
+        self.assertEqual((S + S).nbBytes, S.nbBytes)
 
         # Axiome : result
         for i in range(25):
@@ -226,24 +229,30 @@ class TestSInt(unittest.TestCase):
             - > d.value() == a.value() // b.value()
             - > r.value() == a.value() % b.value()
         """
+        verbose = 0 # to print the detail for this function
+
         def test_floordiv(A,B):
             floordiv1 = A.valeur() // B.valeur()
-            print(
-                """On regarde : A = {a}\n             B = {b}\n               On s'attend à avoir {aval} // {bval} = {afbval}""".format(
-                    a=A.binaire, b=B.binaire, aval=A.valeur(), bval=B.valeur(), afbval=floordiv1
-                ))
+            if verbose >= 1 :
+                print(
+                    """On regarde : A = {a}\n             B = {b}\n               On s'attend à avoir {aval} // {bval} = {afbval}""".format(
+                        a=A.binaire, b=B.binaire, aval=A.valeur(), bval=B.valeur(), afbval=floordiv1
+                    ))
             floordiv2 = (A // B).valeur()
-            print("               Et on a : A // B = {afbvaldeux}\n".format(afbvaldeux=floordiv2))
+            if verbose >= 1:
+                print("               Et on a : A // B = {afbvaldeux}\n".format(afbvaldeux=floordiv2))
             return floordiv1,floordiv2
 
         def test_mod(A,B):
             mod1 = A.valeur() % B.valeur()
-            print(
-                """On regarde : A = {a}\n             B = {b}\n               On s'attend à avoir {aval} % {bval} = {afbval}""".format(
-                    a=A.binaire, b=B.binaire, aval=A.valeur(), bval=B.valeur(), afbval=mod1
-                ))
+            if verbose >= 1:
+                print(
+                    """On regarde : A = {a}\n             B = {b}\n               On s'attend à avoir {aval} % {bval} = {afbval}""".format(
+                        a=A.binaire, b=B.binaire, aval=A.valeur(), bval=B.valeur(), afbval=mod1
+                    ))
             mod2 = (A % B).valeur()
-            print("               Et on a : A % B = {afbvaldeux}\n".format(afbvaldeux=mod2))
+            if verbose >= 1:
+                print("               Et on a : A % B = {afbvaldeux}\n".format(afbvaldeux=mod2))
             return mod1, mod2
 
         for i in range(15):
@@ -254,92 +263,111 @@ class TestSInt(unittest.TestCase):
             A.binaire = bin(max(a,b))[2:].zfill(8)
             B.binaire = bin(min(a,b))[2:].zfill(8)
             # First case : divmod(A,B) : + > +
-            print("================================================================================")
-            print("On teste +A // +B")
-            self.assertEqual(*test_floordiv(A, B))
-            print("Test de +A // +B réussi !!\n\n")
 
-            print("On teste +A % +B")
+            if verbose >= 1:
+                print("================================================================================")
+                print("On teste +A // +B")
+            self.assertEqual(*test_floordiv(A, B))
+            if verbose >= 1:
+                print("Test de +A // +B réussi !!\n\n")
+
+                print("On teste +A % +B")
             self.assertEqual(*test_mod(A, B))
-            print("Test de A % B réussi !!")
-            print("================================================================================")
+            if verbose >= 1:
+                print("Test de A % B réussi !!")
+                print("================================================================================")
 
             # First case : divmod(B,A) : + < +
-            print("================================================================================")
-            print("On teste +B // +A")
+            if verbose >= 1:
+                print("================================================================================")
+                print("On teste +B // +A")
             self.assertEqual(*test_floordiv(B, A))
-            print("Test de +B // +A réussi !!")
+            if verbose >= 1:
+                print("Test de +B // +A réussi !!")
 
-            print("On teste +B % +A")
+                print("On teste +B % +A")
             self.assertEqual(*test_mod(B, A))
-            print("Test de B % A réussi !!")
-            print("================================================================================")
+            if verbose >= 1:
+                print("Test de B % A réussi !!")
+                print("================================================================================")
 
             # First case : divmod(-A,B) : - > + # SOLUTION : -A // B == -(A // B + 1)
-            print("================================================================================")
-            print("On teste -A // +B")
+                print("================================================================================")
+                print("On teste -A // +B")
             self.assertEqual(*test_floordiv(-A, B))
-            print("Test de -A // +B réussi !!")
+            if verbose >= 1:
+                print("Test de -A // +B réussi !!")
 
-            print("On teste -A % +B")
+                print("On teste -A % +B")
             self.assertEqual(*test_mod(-A, B))
-            print("Test de -A % B réussi !!")
-            print("================================================================================")
+            if verbose >= 1:
+                print("Test de -A % B réussi !!")
+                print("================================================================================")
 
             # First case : divmod(A,-B) : + > -
-            print("================================================================================")
-            print("On teste +A // -B")
+                print("================================================================================")
+                print("On teste +A // -B")
             self.assertEqual(*test_floordiv(A, -B)) # SOLUTION : A // -B == -(A // B + 1)
-            print("Test de +A // -B réussi !!")
+            if verbose >= 1:
+                print("Test de +A // -B réussi !!")
 
-            print("On teste +A % -B")
+                print("On teste +A % -B")
             self.assertEqual(*test_mod(A, -B))
-            print("Test de A % -B réussi !!")
-            print("================================================================================")
+            if verbose >= 1:
+                print("Test de A % -B réussi !!")
+                print("================================================================================")
 
             # First case : divmod(-B, A) : - < +
-            print("================================================================================")
-            print("On teste -B // A")
+                print("================================================================================")
+                print("On teste -B // A")
             self.assertEqual(*test_floordiv(-B, A)) # SOLUTION : -B // A == -1 TOUT LE TEMPS
-            print("Test de -B // +A réussi !!")
+            if verbose >= 1:
+                print("Test de -B // +A réussi !!")
 
-            print("On teste -B % +A")
+                print("On teste -B % +A")
             self.assertEqual(*test_mod(-B, A))
-            print("Test de -B % +A réussi !!")
-            print("================================================================================")
+            if verbose >= 1:
+                print("Test de -B % +A réussi !!")
+                print("================================================================================")
 
             # First case : divmod(B, -A) : + < -
-            print("================================================================================")
-            print("On teste +B // -A")
+                print("================================================================================")
+                print("On teste +B // -A")
             self.assertEqual(*test_floordiv(B, -A))
-            print("Test de +B // -A réussi !!")
+            if verbose >= 1:
+                print("Test de +B // -A réussi !!")
 
-            print("On teste +B % -A")
+                print("On teste +B % -A")
             self.assertEqual(*test_mod(B, -A))
-            print("Test de B % -A réussi !!")
-            print("================================================================================")
+            if verbose >= 1:
+                print("Test de B % -A réussi !!")
+                print("================================================================================")
 
             # First case : divmod(-A,-B) : - > -
-            print("================================================================================")
-            print("On teste -A // -B")
+                print("================================================================================")
+                print("On teste -A // -B")
             self.assertEqual(*test_floordiv(-A, -B))
-            print("Test de -A // -B réussi !!")
+            if verbose >= 1:
+                print("Test de -A // -B réussi !!")
 
-            print("On teste -A % -B")
+                print("On teste -A % -B")
             self.assertEqual(*test_mod(-A, -B))
-            print("Test de -A % -B réussi !!")
-            print("================================================================================")
+            if verbose >= 1:
+                print("Test de -A % -B réussi !!")
+                print("================================================================================")
 
             # First case : divmod(-B,-A) : - < -
-            print("================================================================================")
-            print("On teste -B // -A")
+                print("================================================================================")
+                print("On teste -B // -A")
             self.assertEqual(*test_floordiv(-B, -A))
-            print("Test de -B // -A réussi !!")
+            if verbose >= 1:
+                print("Test de -B // -A réussi !!")
 
-            print("On teste -B % -A")
+                print("On teste -B % -A")
             self.assertEqual(*test_mod(-B, -A))
-            print("Test de -B % -A réussi !!")
-            print("================================================================================")
+            if verbose >= 1:
+                print("Test de -B % -A réussi !!")
+                print("================================================================================")
 
     def test__floordiv__(self):
         """
@@ -347,6 +375,7 @@ class TestSInt(unittest.TestCase):
             -> f = a.__floordiv__(b) or f = a // b
             -> f.value() == a.value() // b.value()
         """
+        #TESTED IN DIVMOD
         pass
 
     def test__mod__(self):
@@ -355,6 +384,7 @@ class TestSInt(unittest.TestCase):
             -> m = a.__mod__(b) or m = a % b
             -> m.valeur() == a.valeur() % b.valeur()
         """
+        # TESTED IN DIVMOD
         pass
 
 

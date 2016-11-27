@@ -42,9 +42,9 @@ class TestMot(unittest.TestCase):
         Testing the getter of nb_bytes, expected to be equal to the parameter given to this instance
         """
         # Testing return type
-        self.assertIsInstance(self.M.nb_bytes, int)
+        self.assertIsInstance(self.M.nbBytes, int)
         # Testing if the value is correctly initialised
-        self.assertEqual(self.M.nb_bytes, 2)
+        self.assertEqual(self.M.nbBytes, 2)
 
     def test_binaire_getter(self):
         """
@@ -91,7 +91,7 @@ class TestMot(unittest.TestCase):
         self.assertIsInstance(l, int)
         # Testing if the two ways of computation are equals
         self.assertEqual(l, len(self.M.binaire))
-        self.assertEqual(l, 8 * self.M.nb_bytes)
+        self.assertEqual(l, 8 * self.M.nbBytes)
 
     def test__rshift__(self):
         """
@@ -188,12 +188,12 @@ class TestMot(unittest.TestCase):
         # Testing if n < M.nb_bytes has no effect
         for n in (-178954, -4, 0, 1, 2):
             self.assertEqual(self.M.binaire, self.M.extend(n).binaire)
-            self.assertEqual(self.M.nb_bytes, self.M.extend(n).nb_bytes)
+            self.assertEqual(self.M.nbBytes, self.M.extend(n).nbBytes)
 
         # Testing the filling to the left
         self.assertEqual(self.M.extend(6).binaire,
                          '000000000000000000000000000000000010101100101011')
-        self.assertEqual(self.M.extend(6).nb_bytes, 6)
+        self.assertEqual(self.M.extend(6).nbBytes, 6)
 
     def test_reduce(self):
         """
@@ -209,12 +209,12 @@ class TestMot(unittest.TestCase):
         # Testing if n > nb_bytes works and has no effect
         for n in (178954, 4, 2):
             self.assertEqual(self.M.binaire, self.M.reduce(n).binaire)
-            self.assertEqual(self.M.nb_bytes, self.M.reduce(n).nb_bytes)
+            self.assertEqual(self.M.nbBytes, self.M.reduce(n).nbBytes)
 
         # Testing if n < 1 has the same effect than n = 1
         for n in (0, -4, -1456):
             self.assertEqual(self.M.reduce(1).binaire, self.M.reduce(n).binaire)
-            self.assertEqual(self.M.reduce(n).nb_bytes, 1)
+            self.assertEqual(self.M.reduce(n).nbBytes, 1)
 
         # Testing if the right part is removed
         M = Mot(6)
@@ -226,7 +226,7 @@ class TestMot(unittest.TestCase):
                    '01001100')
         for i in range(5):
             L = M.reduce(5 - i)
-            self.assertEqual(L.nb_bytes, 5 - i)
+            self.assertEqual(L.nbBytes, 5 - i)
             self.assertEqual(L.binaire, results[i])
 
     def test_cast(self):
@@ -240,10 +240,10 @@ class TestMot(unittest.TestCase):
         # Testing the 'smart' call to reduce
         for n in (-14, -5, 0, 1, 2, 4, 5):
             self.assertEqual(M.cast(n).binaire, M.reduce(n).binaire)
-            self.assertEqual(M.cast(n).nb_bytes, M.reduce(n).nb_bytes)
+            self.assertEqual(M.cast(n).nbBytes, M.reduce(n).nbBytes)
         # Testing the 'smart' call to extend
         for n in (6, 7, 12, 205):
-            self.assertEqual(M.cast(n).nb_bytes, M.extend(n).nb_bytes)
+            self.assertEqual(M.cast(n).nbBytes, M.extend(n).nbBytes)
             self.assertEqual(M.cast(n).binaire, M.extend(n).binaire)
 
     def test_relativExtension(self):
@@ -256,10 +256,10 @@ class TestMot(unittest.TestCase):
         self.assertIsInstance(M.relativExtension(0), Mot)
         # Testing if 0 has no effect
         self.assertEqual(M.relativExtension(0).binaire, M.binaire)
-        self.assertEqual(M.relativExtension(0).nb_bytes, M.nb_bytes)
+        self.assertEqual(M.relativExtension(0).nbBytes, M.nbBytes)
         # Testing some values that should work fine
         for n in (-174, -25, -9, -4, -2, 0, 1, 3, 7, 9, 12, 254):
-            self.assertEqual(M.relativExtension(n).nb_bytes, M.cast(6 + n).nb_bytes)
+            self.assertEqual(M.relativExtension(n).nbBytes, M.cast(6 + n).nbBytes)
             self.assertEqual(M.relativExtension(n).binaire, M.cast(6 + n).binaire)
 
     def test__eq__(self):
